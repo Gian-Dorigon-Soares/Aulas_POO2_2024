@@ -47,12 +47,16 @@ public class ContaBancaria {
         }
     }
     public boolean transferencia(ContaBancaria destino, double valor) {
-        if (saque(valor)) {
-            destino.deposito(valor);
-            return true;
-        } else {
-            deposito(valor);
+        if (getNumeroConta() == destino.getNumeroConta()) {
             return false;
+        } else {
+            if (saque(valor)) {
+                destino.deposito(valor);
+                return true;
+            } else {
+                deposito(valor);
+                return false;
+            }
         }
     }
 }

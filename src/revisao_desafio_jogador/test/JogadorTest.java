@@ -4,7 +4,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import revisao_desafio_jogador.Jogador;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class JogadorTest {

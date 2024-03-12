@@ -16,8 +16,22 @@ public class ContaEspecial extends ContaBancaria {
         setLimite(limite);
     }
 
-    public ContaEspecial(double limite) {
-        super
+    public ContaEspecial() {
+        super();
         setLimite(0.0);
+    }
+
+    @Override
+    public boolean saque (double valor) {
+        if (valor > getLimite()) {
+            return false;
+        } else {
+            if (valor > 0 && valor <= getSaldoConta()) {
+                setSaldoConta(getSaldoConta() - valor);
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 }
