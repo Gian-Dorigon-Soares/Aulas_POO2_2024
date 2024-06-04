@@ -1,6 +1,7 @@
 package bancoDeDados;
 
 import bancoDeDados.Model.Cidade;
+import bancoDeDados.Model.Cliente;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,15 +9,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CidadeService {
-
-    public static int insereCidade (Cidade c) {
+public class ClienteService {
+    public static int insereCliente (Cliente c) {
         Connection con = Conexao.conectaPostgres();
-        String sql = "insert into cidade (cidade,uf) values (?,?)";
+        String sql = "insert into cliente (nome,idade, sexo, cidade) values (?,?,?,?)";
         try {
             PreparedStatement pr = con.prepareStatement(sql);
             pr.setString(1, c.getNome());
-            pr.setString(2, c.getUf());
+            pr.setInt(2, c.getIdade());
+            pr.setString(3, c.getSexo());
+            pr.setInt(4, c.getCidade().getId());
             int total = pr.executeUpdate();
             con.close();
             return total;
@@ -25,14 +27,16 @@ public class CidadeService {
             return -1;
         }
     }
-    public static int alteraCidade (Cidade c) {
+    public static int alteraCliente (Cliente c) {
         Connection con = Conexao.conectaPostgres();
-        String sql = "update cidade set cidade=?, uf=? where id=?";
+        String sql = "update cliente set nome=?, idade=?, sexo=?, cidade=? where id=?";
         try {
             PreparedStatement pr = con.prepareStatement(sql);
             pr.setString(1, c.getNome());
-            pr.setString(2, c.getUf());
-            pr.setInt(3, c.getId());
+            pr.setInt(2, c.getIdade());
+            pr.setString(3, c.getSexo());
+            pr.setInt(4, c.getCidade().getId());
+            pr.setInt(5, c.getId());
             int total = pr.executeUpdate();
             con.close();
             return total;
@@ -41,9 +45,9 @@ public class CidadeService {
             return -1;
         }
     }
-    public static int deletaCidade (Cidade c) {
+    public static int deletaCliente (Cliente c) {
         Connection con = Conexao.conectaPostgres();
-        String sql = "delete from cidade where id=?";
+        String sql = "delete from cliente where id=?";
         try {
             PreparedStatement pr = con.prepareStatement(sql);
             pr.setInt(1, c.getId());
@@ -55,18 +59,20 @@ public class CidadeService {
             return -1;
         }
     }
-    public static ArrayList<Cidade> listAll() {
-        ArrayList<Cidade> lista = new ArrayList<>();
+    public static ArrayList<Cliente> listAll() {
+        ArrayList<Cliente> lista = new ArrayList<>();
         try {
             Connection con = Conexao.conectaPostgres();
-            String sql = "select * from cidade";
+            String sql = "select * from cliente";
             PreparedStatement pr = con.prepareStatement(sql);
             ResultSet resultSet = pr.executeQuery();
             while (resultSet.next()) {
-                Cidade c = new Cidade();
+                Cliente c = new Cliente();
                 c.setId(resultSet.getInt("id"));
-                c.setNome(resultSet.getString("cidade"));
-                c.setUf(resultSet.getString("uf"));
+                c.setNome(resultSet.getString("nome"));
+                c.setIdade(resultSet.getInt("idade"));
+                c.setSexo(resultSet.getString("sexo"));
+                c.setCidade(CidadeService.findById(resultSet.getInt("cidade")));
                 lista.add(c);
             }
             con.close();
@@ -75,32 +81,13 @@ public class CidadeService {
         }
         return lista;
     }
-    public static Cidade findById(int id) {
-        Cidade c = new Cidade();
-        try {
-            Connection con = Conexao.conectaPostgres();
-            String sql = "select * from cidade where id = ?";
-            PreparedStatement pr = con.prepareStatement(sql);
-            pr.setInt(1, id);
-            ResultSet resultSet = pr.executeQuery();
-            while (resultSet.next()) {
-                c.setId(resultSet.getInt("id"));
-                c.setNome(resultSet.getString("cidade"));
-                c.setUf(resultSet.getString("uf"));
-            }
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return c;
-    }
-    public static int limpaBaseCidade () {
+    public static int limpaBaseCliente () {
         Connection con = Conexao.conectaPostgres();
-        String sql = "delete from cidade where id> 0";
+        String sql = "delete from cliente where id>0";
         try {
             PreparedStatement pr = con.prepareStatement(sql);
             int total = pr.executeUpdate();
-            sql = "TRUNCATE TABLE cidade RESTART IDENTITY CASCADE";
+            sql = "TRUNCATE TABLE cliente RESTART IDENTITY CASCADE";
             pr = con.prepareStatement(sql);
             total = pr.executeUpdate();
             con.close();
